@@ -1,0 +1,29 @@
+{
+  "name": "simple-blockchain-javascript",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "start": "ts-node ./src/index.ts",
+    "build": "tsc"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/VictorGreco/simple-blockchain-javascript.git"
+  },
+  "author": "",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/VictorGreco/simple-blockchain-javascript/issues"
+  },
+  "homepage": "https://github.com/VictorGreco/simple-blockchain-javascript#readme",
+  "devDependencies": {
+    "@types/node": "^17.0.14",
+    "ts-node": "^10.4.0",
+    "typescript": "^4.5.5"
+  },
+  "dependencies": {
+    "@types/crypto-js": "^4.1.0",
+    "crypto-js": "^4.1.1"
+  }
+}
