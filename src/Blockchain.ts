@@ -15,7 +15,7 @@ export class Blockchain {
     }
 
     createGenesisBlock() {
-        return new Block(new Date().getTime(), [new Transaction(null, null, 0)]);
+        return new Block(new Date().getTime(), [new Transaction(null, null, 0, 'Genesis block')]);
     }
 
     getLatestBLock() {
@@ -23,21 +23,28 @@ export class Blockchain {
     }
 
     minePendingTransactions(miningRewardAddress: string) {
-        let block = new Block(Date.now(), this.pendingTransactions); // In real blockchain would be impossible to add all the pensingTransactions in just one block.
+        const miningTransaction = new Transaction(null, miningRewardAddress, this.miningReward, 'Mining reward');
+        this.pendingTransactions.push(miningTransaction);
 
+        let block = new Block(Date.now(), this.pendingTransactions, this.getLatestBLock().hash); // In real blockchain would be impossible to add all the pensingTransactions in just one block.
         block.mineBlock(this.difficulty);
 
         console.log('Block successfully mined');
-
         this.chain.push(block);
 
-        this.pendingTransactions = [
-            new Transaction(null, miningRewardAddress, this.miningReward)
-        ]
+        this.pendingTransactions = []
 
     }
 
     addTransaction(transaction: Transaction) {
+        if (!transaction.fromAddress || !transaction.toAddress) {
+            throw new Error('Transaction must include from and to address');
+        }
+
+        if (!transaction.isValid()) {
+            throw new Error('Cannot add invalid transaction to chain');
+        }
+
         this.pendingTransactions.push(transaction);
     }
 
@@ -59,10 +66,15 @@ export class Blockchain {
         for (let i = 1; i < this.chain.length; i++) {
             const currentBlock = this.chain[i];
             const previousBlock = this.chain[i - 1];
-            const isSameBlockHash = currentBlock.hash === currentBlock.calculateHash();
-            const isCorrectPreviousHash = currentBlock.previousHash === previousBlock.hash;
 
-            if (!isSameBlockHash || ! isCorrectPreviousHash) return false;
+            const isBlockHashCorrect = currentBlock.hash === currentBlock.calculateHash();
+            const isPreviousBlockHashCorrect = currentBlock.previousHash === previousBlock.hash;
+            const hasCurrentBlockValidTransactions = currentBlock.hasValidTransactions(); 
+
+            if (!isBlockHashCorrect || 
+                !isPreviousBlockHashCorrect || 
+                !hasCurrentBlockValidTransactions) 
+                return false;
         }
 
         return true;

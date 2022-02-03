@@ -27,7 +27,13 @@ export class Block {
             this.nounce++;
             this.hash = this.calculateHash();
         }
+    }
 
-        console.log('Block mined: ', this.hash);
+    hasValidTransactions() {
+        for (const transaction of this.transactions) {
+            if (!transaction.isValid()) return false;
+        }
+
+        return true;
     }
 }
